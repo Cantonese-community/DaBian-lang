@@ -1,0 +1,126 @@
+$get_token_list |code, keywords| => 
+  讲嘢: lex 係 |Lexer(code, keywords)|
+  || 拍住上 -> tokens
+  
+  落操场玩跑步
+    讲嘢: token 係 |lex.获取token()|
+    tokens -> |加啲|: token
+    如果 |token[1] 系 ['EOF', 'EOF']| 嘅话 -> {
+      饮茶先啦
+    }
+  玩到 唔啱 为止
+
+  还数 tokens
+搞掂
+
+/*
+ * Parser for DaBian Token list
+*/
+咩系 Parser?
+  佢个老豆叫 object
+  
+  佢识得 |__init__| |tokens, Node| => {
+    讲嘢 -> {
+      |自己嘅 tokens| 係 tokens
+      |自己嘅 pos| 係 0
+      |自己嘅 Node| 係 Node
+    }
+  }
+
+  佢识得 get |offset, get_line = 唔啱| => {
+    如果 |自己嘅 pos + offset >= 自己嘅 tokens 嘅长度| 嘅话 -> {
+      还数 |["", ""]|
+    }
+    如果 get_line 嘅话 -> {
+      /* self.tokens[self.pos + offset][0] */
+      还数 |身位(自己嘅 tokens, 自己嘅 pos + offset, 0)|
+    }
+    /* self.tokens[self.pos + offset][1] */
+    还数 |身位(自己嘅 tokens, 自己嘅 pos + offset, 1)|
+  }
+
+  佢识得 skip |offset| -> {
+    讲嘢: |自己嘅 pos| 係 |自己嘅 pos + offset|
+  }
+
+  /*
+   * Try to check the next token, skip it if it's matched.
+  */
+  佢识得 match |name| => {
+    如果 |自己嘅 get(0)[1] 喺 name| 嘅话 -> {
+      讲嘢: |自己嘅 pos| 係 |自己嘅 pos + 1|
+      还数 啱
+    }
+    还数 唔啱
+  }
+
+  佢识得 parse -> {
+    落操场玩跑步
+      如果 |自己嘅 match(["捅了老挝", "没想到捅了老挝"])| 嘅话 -> {
+        如果 |not 自己嘅 match(['->'])| 嘅话 -> {
+          掟个 "Excepted '->' in print statement." 来睇下?
+        }
+        |自己嘅 Node| -> |加啲|: |PrintAST(自己嘅 get(0))|
+        |自己嘅 skip| 下 -> 1
+      }
+
+      定系 |自己嘅 match(["抓个小贼", "本以为抓个小贼"])| 嘅话 -> {
+        如果 |not 自己嘅 match(['->'])| 嘅话 -> {
+          掟个 "Excepted '->' in input statement." 来睇下?
+        }
+        讲嘢: AssignExpr 係 |自己嘅 get(0)[1]|
+        
+        如果 |not (',' 喺 AssignExpr)| 嘅话 -> {
+          |自己嘅 Node| -> |加啲|: |InputAST(自己嘅 AssignExpr[1:-1], "")|
+        }
+        唔系 嘅话 -> {
+          |自己嘅 Node| -> |加啲|: |InputAST(AssignExpr[1 : AssignExpr.index(',')], 
+                                             AssignExpr[AssignExpr.index(',') + 1 : -1])|
+        }
+        |自己嘅 skip| 下 -> 1
+      }
+
+      定系 |自己嘅 match(["答辩", "依托答辩"])| 嘅话 -> {
+        如果 |not 自己嘅 match(['{'])| 嘅话 -> {
+          掟个 "Excepted '{' in assign statement." 来睇下?
+        }
+        || 拍住上 -> KeyList
+        || 拍住上 -> ValueList
+        讲嘢: t 係 0
+        落操场玩跑步
+          讲嘢: t 係 |t + 1|
+          如果 |t & 1| 嘅话 -> {
+            KeyList -> |加啲| : |自己嘅 get(0)[1]|
+          }
+          唔系 嘅话 -> {
+            ValueList -> |加啲| : |自己嘅 get(0)[1]|
+          }
+          |自己嘅 skip| 下 -> 1
+        玩到 |自己嘅 get(0)[1] 系 '}'| 为止
+        |自己嘅 skip| 下 -> 1
+        |自己嘅 Node| -> |加啲|: |AssignAST(KeyList, ValueList)|
+      }
+      
+      唔系 嘅话 -> {
+        饮茶先啦
+      }
+    玩到 唔啱 为止
+  }
+明白未啊?
+
+讲嘢: TO_PY_CODE 係 ""
+$ trans |Nodes, TAB = '', label = ''| =>
+  Share下 TO_PY_CODE
+  畀我睇下 Nodes 点样先?
+  i 从 0 行到 |Nodes 嘅长度|
+    如果 |Nodes[i].__class__.__name__ == "PrintAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+    }
+    定系 |Nodes[i].__class__.__name__ == "InputAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+    }
+    定系 |Nodes[i].__class__.__name__ == "AssignAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+    }
+  行晒
+搞掂
