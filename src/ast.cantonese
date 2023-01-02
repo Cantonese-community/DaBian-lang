@@ -27,6 +27,9 @@
           身位(自己嘅 args, 0) == 'identifier'| 嘅话 -> {
       还数 |"print(" + 身位(自己嘅 args, 1) + ")" + "\n"|
     }
+    定系 |身位(自己嘅 args, 0) == 'expr'| 嘅话 -> {
+      还数 |"print" + 身位(自己嘅 args, 1) + "\n"|
+    }
   }
 明白未啊?
 
@@ -58,7 +61,33 @@
 咩系 FunctionDefAST?
   佢个老豆叫 AST
   佢有啲咩 => |FuncName, Args, Body|
-  佢识得 生成代码 || => {
-    
+  佢识得 生成代码 => {
+    如果 |自己嘅 Args 嘅长度 系 0| 嘅话 -> {
+      还数 |"def " + 自己嘅 FuncName + "():" + '\n'|  
+    }
+    唔系 嘅话 -> {
+      还数 |"def " + 自己嘅 FuncName + 自己嘅 Args + ":\n"|
+    }
   }
+明白未啊?
+
+咩系 FunctionCallAST?
+  佢个老豆叫 AST
+  佢有啲咩 => |FuncName, Args|
+  佢识得 生成代码 => {
+    如果 |自己嘅 Args 嘅长度 系 0| 嘅话 -> {
+      还数 |自己嘅 FuncName + "()" + '\n'|
+    }
+    唔系 嘅话 -> {
+      还数 |自己嘅 FuncName + 自己嘅 Args + "\n"|
+    }
+  }
+明白未啊?
+
+咩系 ReturnAST?
+  佢个老豆叫 object
+    佢有啲咩 => |val|
+    佢识得 生成代码 => {
+      还数 |"return " + 自己嘅 val + "\n"|
+    }
 明白未啊?

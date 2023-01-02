@@ -54,6 +54,17 @@ $get_token_list |code, keywords| =>
     还数 唔啱
   }
 
+  /*
+   * Try to check the next token's type
+  */
+  佢识得 match_type |name| => {
+    如果 |自己嘅 get(0)[0]  喺  name| 嘅话 -> {
+       |自己嘅 skip| 下 -> 1
+       还数 啱
+    }
+    还数 唔啱
+  }
+
   佢识得 parse -> {
     落操场玩跑步
       如果 |自己嘅 match(["捅了老挝", "没想到捅了老挝"])| 嘅话 -> {
@@ -101,6 +112,53 @@ $get_token_list |code, keywords| =>
         |自己嘅 Node| -> |加啲|: |AssignAST(KeyList, ValueList)|
       }
       
+      定系 |自己嘅 match(["功夫是这样的"])| 嘅话 -> {
+        如果 |not 自己嘅 match_type('identifier')| 嘅话 -> {
+           掟个 "Excepted identifier type in function define statement." 来睇下?
+        }
+        讲嘢: FuncName 係 |自己嘅 get(-1)[1]|
+        讲嘢: FuncArgs 係 ""
+        如果 |自己嘅 get(0)[0] == 'expr'| 嘅话 -> {
+          讲嘢: FuncArgs 係 |自己嘅 get(0)[1]|
+          |自己嘅 skip| 下 -> 1 
+        }
+        |自己嘅 skip| 下 -> 1
+        || 拍住上 -> FuncBody
+        || 拍住上 -> FuncBodyNode
+        落操场玩跑步
+          FuncBody -> |加啲| : |[自己嘅 get(0, 啱), 自己嘅 get(0)]|
+          |自己嘅 skip| 下 -> 1 
+        玩到 |身位(自己嘅 get(0), 1) == "任何邪恶终将绳之以法"| 为止
+        |自己嘅 skip| 下 -> 1
+        讲嘢: p 係 |Parser(FuncBody, FuncBodyNode)|
+        |p.parse| 下 -> ||
+        |自己嘅 Node| -> |加啲|: |FunctionDefAST(FuncName, FuncArgs, p.Node)|
+      }
+
+      定系 |自己嘅 match(["绳之以法"])| 嘅话 -> {
+        如果 |not 自己嘅 match(['->'])| 嘅话 -> {
+          掟个 "Excepted '->' in Functin call statement." 来睇下?
+        }
+        讲嘢: FuncName 係 |自己嘅 get(0)[1]|
+        |自己嘅 skip| 下 -> 1
+        讲嘢: FuncArgs 係 ""
+        如果 |自己嘅 get(0)[0] == 'expr'| 嘅话 -> {
+          讲嘢: FuncArgs 係 |自己嘅 get(0)[1]|
+          |自己嘅 skip| 下 -> 1 
+        }
+
+        |自己嘅 Node| -> |加啲|: |FunctionCallAST(FuncName, FuncArgs)|
+      }
+
+      定系 |自己嘅 match(["此地答辩"])| 嘅话 -> {
+        讲嘢: val 係 ""
+        如果 |自己嘅 get(0)[0] == 'expr'| 嘅话 -> {
+          讲嘢: val 係 |自己嘅 get(0)[1]|
+          |自己嘅 skip| 下 -> 1 
+        }
+        |自己嘅 Node| -> |加啲|: |ReturnAST(val)|
+      }
+
       唔系 嘅话 -> {
         饮茶先啦
       }
@@ -111,7 +169,7 @@ $get_token_list |code, keywords| =>
 讲嘢: TO_PY_CODE 係 ""
 $ trans |Nodes, TAB = '', label = ''| =>
   Share下 TO_PY_CODE
-  畀我睇下 Nodes 点样先?
+  讲嘢: TAB 係 |'' if (label != "if" and label != "func" and label != "while") else TAB|
   i 从 0 行到 |Nodes 嘅长度|
     如果 |Nodes[i].__class__.__name__ == "PrintAST"| 嘅话 -> {
       讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
@@ -120,6 +178,16 @@ $ trans |Nodes, TAB = '', label = ''| =>
       讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
     }
     定系 |Nodes[i].__class__.__name__ == "AssignAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+    }
+    定系 |Nodes[i].__class__.__name__ == "FunctionDefAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+      trans 下 -> |Nodes[i].Body, TAB + '\t', label = "func"|
+    }
+    定系 |Nodes[i].__class__.__name__ == "FunctionCallAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+    }
+    定系 |Nodes[i].__class__.__name__ == "ReturnAST"| 嘅话 -> {
       讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
     }
   行晒

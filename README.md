@@ -1,7 +1,7 @@
 # The DaBian Programming language
 "答辩"编程语言, 想掌握一门编程语言？不是"答辩"的我不学!  
 
-# Hello World
+## Hello World
 ```
 捅了老挝 -> "Hello World!"
 ```
@@ -20,7 +20,7 @@ Hello World!
 666
 ```
 
-# 赋值语句
+## 赋值语句
 在"答辩"语言中, 所有对象都可以看作答辩. 我们可以用 `依托答辩` 来定义一个变量 `a`:
 ```
 依托答辩 {a : 5}
@@ -38,7 +38,7 @@ Hello World!
 捅了老挝 -> c
 ```
 
-# 函数定义
+## 函数定义
 对于违法行为我们要用 `功夫是这样的` 定义一个函数将其 `绳之以法`!  
 `此地答辩`相当于`return`, 函数定义完后别忘了喊一句: `任何邪恶终将绳之以法!`:  
 ```
@@ -56,14 +56,14 @@ Hello World!
 4
 ```
 
-# 循环
+## 循环
 ```
 依托答辩 {白象 : 1}
 不是 (白象) 的我不吃 ->
     捅了老挝 -> "看你往哪跑!"
 因为是良心的中国制造!
 ```
-# 条件语句
+## 条件语句
 if-else语句:  
 ```
 依托答辩 {num : 7}
@@ -78,9 +78,9 @@ if-else语句:
 ```
 num 是奇数
 ```
-更多例子见 ![这里](examples/).  
-# 安装
-"答辩"语言基于 ![Cantonese语言](https://github.com/StepfenShawn/Cantonese) 实现, 所以直接用 `pip` 安装好 `Cantonese` 就行了:  
+更多例子见 [这里](examples/).  
+## 安装
+"答辩"语言基于 [粤语编程语言](https://github.com/StepfenShawn/Cantonese) 开发, 所以直接用 `pip` 安装好 `Cantonese` 就行了:  
 ```
 pip install Cantonese
 ```
@@ -88,6 +88,6 @@ pip install Cantonese
 ```
 Cantonese src/dabian.cantonese [-文件名]
 ```
-# 最后
+## 最后
 在b站娱乐的同时也别忘了学习哦! Just for fun! Enjoy it!  
 如果有更好的想法，欢迎提issue或PR!!!  
