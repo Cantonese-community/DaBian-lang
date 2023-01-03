@@ -67,7 +67,7 @@ $get_token_list |code, keywords| =>
 
   佢识得 parse -> {
     落操场玩跑步
-      如果 |自己嘅 match(["捅了老挝", "没想到捅了老挝"])| 嘅话 -> {
+      如果 |自己嘅 match(kw_print)| 嘅话 -> {
         如果 |not 自己嘅 match(['->'])| 嘅话 -> {
           掟个 "Excepted '->' in print statement." 来睇下?
         }
@@ -75,7 +75,7 @@ $get_token_list |code, keywords| =>
         |自己嘅 skip| 下 -> 1
       }
 
-      定系 |自己嘅 match(["抓个小贼", "本以为抓个小贼"])| 嘅话 -> {
+      定系 |自己嘅 match(kw_input)| 嘅话 -> {
         如果 |not 自己嘅 match(['->'])| 嘅话 -> {
           掟个 "Excepted '->' in input statement." 来睇下?
         }
@@ -91,7 +91,7 @@ $get_token_list |code, keywords| =>
         |自己嘅 skip| 下 -> 1
       }
 
-      定系 |自己嘅 match(["答辩", "依托答辩"])| 嘅话 -> {
+      定系 |自己嘅 match(kw_assign)| 嘅话 -> {
         如果 |not 自己嘅 match(['{'])| 嘅话 -> {
           掟个 "Excepted '{' in assign statement." 来睇下?
         }
@@ -112,7 +112,7 @@ $get_token_list |code, keywords| =>
         |自己嘅 Node| -> |加啲|: |AssignAST(KeyList, ValueList)|
       }
       
-      定系 |自己嘅 match(["功夫是这样的"])| 嘅话 -> {
+      定系 |自己嘅 match(kw_def)| 嘅话 -> {
         如果 |not 自己嘅 match_type('identifier')| 嘅话 -> {
            掟个 "Excepted identifier type in function define statement." 来睇下?
         }
@@ -159,6 +159,27 @@ $get_token_list |code, keywords| =>
         |自己嘅 Node| -> |加啲|: |ReturnAST(val)|
       }
 
+      定系 |自己嘅 match(["不是"])| 嘅话 -> {
+        讲嘢: Cond 係 |自己嘅 get(0)[1]|
+        |自己嘅 skip| 下 -> 1
+        如果 |not 自己嘅 match("的我不吃")| 嘅话 -> {
+          掟个 "Excepted '的我不吃' in while statement. " 来睇下?
+        }
+        如果 |not 自己嘅 match("->")| 嘅话 -> {
+          掟个 "Excepted '->' in while statement. " 来睇下?
+        }
+        || 拍住上 -> WhileBody
+        || 拍住上 -> WhileBodyNode
+        落操场玩跑步
+          WhileBody -> |加啲| : |[自己嘅 get(0, 啱), 自己嘅 get(0)]|
+          |自己嘅 skip| 下 -> 1 
+        玩到 |自己嘅 get(0)[1] == "因为是良心的中国制造"| 为止
+        |自己嘅 skip| 下 -> 1
+        讲嘢: p 係 |Parser(WhileBody, WhileBodyNode)|
+        |p.parse| 下 -> ||
+        |自己嘅 Node| -> |加啲|: |WhileAST(Cond, p.Node)|
+      }
+
       唔系 嘅话 -> {
         饮茶先啦
       }
@@ -183,6 +204,10 @@ $ trans |Nodes, TAB = '', label = ''| =>
     定系 |Nodes[i].__class__.__name__ == "FunctionDefAST"| 嘅话 -> {
       讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
       trans 下 -> |Nodes[i].Body, TAB + '\t', label = "func"|
+    }
+    定系 |Nodes[i].__class__.__name__ == "WhileAST"| 嘅话 -> {
+      讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
+      trans 下 -> |Nodes[i].Body, TAB + '\t', label = "while"| 
     }
     定系 |Nodes[i].__class__.__name__ == "FunctionCallAST"| 嘅话 -> {
       讲嘢: TO_PY_CODE 係 |TO_PY_CODE + TAB + Nodes[i].生成代码()|
