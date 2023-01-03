@@ -14,9 +14,7 @@
 }
 
 get_token_list 下 -> |ctx, 关键字| @ tk_list
-/* 畀我睇下 tk_list 点样先? */
 讲嘢: parse 係 |Parser(tk_list, [])|
 |parse.parse| 下 -> ||
 trans 下 -> |parse.Node|
-/* 畀我睇下 TO_PY_CODE 点样先? */
 exec 下 -> TO_PY_CODE

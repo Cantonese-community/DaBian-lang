@@ -140,9 +140,10 @@ class WhileAST(AST):
 	def 生成代码(self):
 		return "while " + self. Cond + ":" + "\n"
 class IfAST(AST):
-	def __init__(self, Cond, Body):
+	def __init__(self, Cond, IfBody, ElseBody):
 		self.Cond = Cond
-		self.Body = Body
+		self.IfBody = IfBody
+		self.ElseBody = ElseBody
 	def 生成代码(self):
 		return "if " + self. Cond + ":" + "\n"
 class ElifAST(AST):
@@ -151,11 +152,6 @@ class ElifAST(AST):
 		self.Body = Body
 	def 生成代码(self):
 		return "elif " + self. Cond + ":" + "\n"
-class ElseAST(AST):
-	def __init__(self, Body):
-		self.Body = Body
-	def 生成代码(self):
-		return "else:\n"
 def get_token_list(code, keywords):
 	lex = Lexer(code, keywords)
 	tokens = []
@@ -190,12 +186,12 @@ class Parser(object):
 		return 唔啱
 	def parse(self):
 		while not (唔啱):
-			if self. match(["捅了老挝", "没想到捅了老挝"]):
+			if self. match(kw_print):
 				if not self. match(['->']):
 					raise "Excepted '->' in print statement."
 				self. Node.append(PrintAST(self. get(0)))
 				self. skip(1)
-			elif self. match(["抓个小贼", "本以为抓个小贼"]):
+			elif self. match(kw_input):
 				if not self. match(['->']):
 					raise "Excepted '->' in input statement."
 				AssignExpr = self. get(0)[1]
@@ -205,7 +201,7 @@ class Parser(object):
 					self. Node.append(InputAST(AssignExpr[1 : AssignExpr.index(',')], 
                                              AssignExpr[AssignExpr.index(',') + 1 : -1]))
 				self. skip(1)
-			elif self. match(["答辩", "依托答辩"]):
+			elif self. match(kw_assign):
 				if not self. match(['{']):
 					raise "Excepted '{' in assign statement."
 				KeyList = []
@@ -220,7 +216,7 @@ class Parser(object):
 					self. skip(1)
 				self. skip(1)
 				self. Node.append(AssignAST(KeyList, ValueList))
-			elif self. match(["功夫是这样的"]):
+			elif self. match(kw_def):
 				if not self. match_type('identifier'):
 					raise "Excepted identifier type in function define statement."
 				FuncName = self. get(-1)[1]
@@ -231,14 +227,25 @@ class Parser(object):
 				self. skip(1)
 				FuncBody = []
 				FuncBodyNode = []
-				while not (身位(self. get(0), 1) == "任何邪恶终将绳之以法"):
-					FuncBody.append([self. get(0, 啱), self. get(0)])
-					self. skip(1)
+				func_should_end = 1
+				func_case_end = 0
+				while not (func_should_end == func_case_end or \
+              self. pos >= self. tokens .__len__()):
+					if self. get(0)[1]  in  kw_if:
+						func_should_end = func_should_end + 1
+						FuncBody.append([self. get(0, 啱), self. get(0)])
+						self. skip(1)
+					elif self. get(0)[1]  in kw_end:
+						func_case_end = func_case_end + 1
+						self. skip(1)
+					else:
+						FuncBody.append([self. get(0, 啱), self. get(0)])
+						self. skip(1)
 				self. skip(1)
 				p = Parser(FuncBody, FuncBodyNode)
 				p.parse()
 				self. Node.append(FunctionDefAST(FuncName, FuncArgs, p.Node))
-			elif self. match(["绳之以法"]):
+			elif self. match(kw_call):
 				if not self. match(['->']):
 					raise "Excepted '->' in Functin call statement."
 				FuncName = self. get(0)[1]
@@ -248,16 +255,16 @@ class Parser(object):
 					FuncArgs = self. get(0)[1]
 					self. skip(1)
 				self. Node.append(FunctionCallAST(FuncName, FuncArgs))
-			elif self. match(["此地答辩"]):
+			elif self. match(kw_return):
 				val = ""
 				if self. get(0)[0] == 'expr':
 					val = self. get(0)[1]
 					self. skip(1)
 				self. Node.append(ReturnAST(val))
-			elif self. match(["不是"]):
+			elif self. match(kw_while_begin):
 				Cond = self. get(0)[1]
 				self. skip(1)
-				if not self. match("的我不吃"):
+				if not self. match(kw_while_do):
 					raise "Excepted '的我不吃' in while statement. "
 				if not self. match("->"):
 					raise "Excepted '->' in while statement. "
@@ -270,6 +277,38 @@ class Parser(object):
 				p = Parser(WhileBody, WhileBodyNode)
 				p.parse()
 				self. Node.append(WhileAST(Cond, p.Node))
+			elif self. match(kw_if):
+				Cond = self. get(0)[1]
+				self. skip(1)
+				if not self. match(["跟我zs"]):
+					raise "Excepted '跟我zs' in while statement. "
+				if not self. match("->"):
+					raise "Excepted '->' in while statement. "
+				IfBody = []
+				IfBodyNode = []
+				ElseBody = []
+				ElseBodyNode = []
+				if_case_end = 0
+				if_should_end = 1
+				while not (if_case_end == if_should_end or \
+              self. pos >= self. tokens .__len__()):
+					if self. get(0)[1] in kw_def:
+						if_should_end = if_should_end + 1
+						IfBody.append([self. get(0, 啱), self. get(0)])
+						self. skip(1)
+					elif self. get(0)[1] in kw_end:
+						if_case_end = if_case_end + 1
+						IfBody.append([self. get(0, 啱), self. get(0)])
+						self. skip(1)
+					else:
+						IfBody.append([self. get(0, 啱), self. get(0)])
+						self. skip(1)
+				If_parser = Parser(IfBody, IfBodyNode)
+				If_parser.parse()
+				Else_parser = Parser(ElseBody, ElseBodyNode)
+				if ElseBody != []:
+					Else_parser.parse()
+				self. Node.append(IfAST(Cond, If_parser.Node, Else_parser.Node))
 			else:
 				break
 TO_PY_CODE = ""
@@ -289,6 +328,12 @@ def trans(Nodes, TAB = '', label = ''):
 		elif Nodes[i].__class__.__name__ == "WhileAST":
 			TO_PY_CODE = TO_PY_CODE + TAB + Nodes[i].生成代码()
 			trans(Nodes[i].Body, TAB + '\t', label = "while")
+		elif Nodes[i].__class__.__name__ == "IfAST":
+			TO_PY_CODE = TO_PY_CODE + TAB + Nodes[i].生成代码()
+			trans(Nodes[i].IfBody, TAB + '\t', label = "if")
+			if Nodes[i].ElseBody .__len__() != 0:
+				TO_PY_CODE = TO_PY_CODE + TAB + "else:\n"
+				trans(Nodes[i].ElseBody, TAB + '\t', label = "if")
 		elif Nodes[i].__class__.__name__ == "FunctionCallAST":
 			TO_PY_CODE = TO_PY_CODE + TAB + Nodes[i].生成代码()
 		elif Nodes[i].__class__.__name__ == "ReturnAST":
@@ -301,16 +346,26 @@ def trans(Nodes, TAB = '', label = ''):
   "要是", "跟我zs", "你这是违法行为",
   "不是", "的我不吃", "因为是良心的中国制造"
 }
+kw_print = ["捅了老挝", "没想到捅了老挝"]
+kw_input = ["抓个小贼", "本以为抓个小贼"]
+kw_assign = ["依托答辩", "答辩"]
+kw_def = ["功夫是这样的"]
+kw_end = ["任何邪恶终将绳之以法"]
+kw_while_begin = ["不是"]
+kw_while_do = ["的我不吃"]
+kw_while_end = ["因为是良心的中国制造"]
+kw_call = ["绳之以法"]
+kw_if = ["要是"]
+kw_then = ["跟我zs"]
+kw_else = ["你这是违法行为"]
+kw_return = ["此地答辩"]
 import sys
 try:
 	ctx = 读取(开份文件(身位(sys.argv, 2), 解码 = 'utf-8'))
-	print(身位(sys.argv, 2))
 except FileNotFoundError:
 	print("Can not find the path: " + sys.argv[2])
 tk_list = get_token_list(ctx, 关键字)
-print(tk_list)
 parse = Parser(tk_list, [])
 parse.parse()
 trans(parse.Node)
-print(TO_PY_CODE)
 exec(TO_PY_CODE)
