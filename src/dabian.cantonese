@@ -16,5 +16,6 @@
 get_token_list 下 -> |ctx, 关键字| @ tk_list
 讲嘢: parse 係 |Parser(tk_list, [])|
 |parse.parse| 下 -> ||
+使下 gif_show
 trans 下 -> |parse.Node|
 exec 下 -> TO_PY_CODE

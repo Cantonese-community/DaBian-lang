@@ -367,5 +367,5 @@ except FileNotFoundError:
 tk_list = get_token_list(ctx, 关键字)
 parse = Parser(tk_list, [])
 parse.parse()
+import gif_show
 trans(parse.Node)
-exec(TO_PY_CODE)

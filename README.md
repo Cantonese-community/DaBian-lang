@@ -9,6 +9,8 @@
 ```
 Hello World!
 ```
+运行成功后会自动"结算动画":  
+![结算动画](examples/run-exmple.gif)
 有了输出那一定就要有输入了, 可以用`本以为抓个小贼`或`抓个小贼`, 输出可以用`没想到捅了老挝`或`捅了老挝`:  
 ```
 本以为抓个小贼 -> (num, "请输入一个数: ")
@@ -84,6 +86,12 @@ num 是奇数
 ```
 pip install Cantonese
 ```
+再安装好几个播放"结算动画"要用到的库:  
+```
+pip install numpy
+pip install pillow
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python
+```
 运行:  
 ```
 Cantonese src/dabian.cantonese [-文件名]
@@ -91,3 +99,4 @@ Cantonese src/dabian.cantonese [-文件名]
 ## 最后
 在b站娱乐的同时也别忘了学习哦! Just for fun! Enjoy it!  
 如果有更好的想法，欢迎提issue或PR!!!  
+![Bye](dabian.gif)
