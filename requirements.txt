@@ -1,12 +1,4 @@
-alembic==1.0.10
-appnope==0.1.0
-astroid==2.2.5
-attrs==19.1.0
-backcall==0.1.0
-bcrypt==3.1.6
-bleach==3.1.0
-cffi==1.12.3
-Click==7.0
-decorator==4.4.0
-defusedxml==0.6.0
-entrypoints==0.3
+cantonese==1.0.7
+pillow==10.0.0
+opencv-python==4.8.0.76
+numpy==1.25.2
