@@ -1,4 +1,4 @@
-cantonese==1.0.7
+Cantonese==1.0.7
 pillow==10.0.0
 opencv-python==4.8.0.76
 numpy==1.25.2
